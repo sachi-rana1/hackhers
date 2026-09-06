@@ -1,5 +1,10 @@
+fastapi
+uvicorn
+streamlit
 pandas
 numpy
-matplotlib
-seaborn
-streamlit
+plotly
+sqlalchemy
+psycopg2-binary
+requests
+beautifulsoup4

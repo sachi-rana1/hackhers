@@ -3,7 +3,7 @@ import pandas as pd
 import datetime
 import random
 
-# --- 1. MOCK DATA GENERATION ---
+# --- 1. CONFIGURATION & WEIGHTS ---
 routes = ['DEL-BOM', 'DEL-BLR', 'BOM-BLR', 'DEL-CCU', 'BLR-HYD']
 route_weights = {'DEL-BOM': 0.35, 'DEL-BLR': 0.25, 'BOM-BLR': 0.18, 'DEL-CCU': 0.12, 'BLR-HYD': 0.10}
 base_prices = {'DEL-BOM': 4500, 'DEL-BLR': 5500, 'BOM-BLR': 4000, 'DEL-CCU': 5000, 'BLR-HYD': 3000}
@@ -11,6 +11,7 @@ airlines = ['IndiGo', 'Air India', 'SpiceJet', 'Akasa Air', 'Air India Express']
 sources = ['Direct Airline', 'MakeMyTrip', 'EaseMyTrip', 'Yatra', 'Cleartrip', 'ixigo']
 lead_times = ['T+1', 'T+7', 'T+15', 'T+30', 'T+45']
 
+# --- 2. DATA SIMULATION & PIPELINE ---
 def get_simulated_data():
     np.random.seed(42)
     random.seed(42)
@@ -46,7 +47,6 @@ def get_simulated_data():
                     })
     return pd.DataFrame(raw_records)
 
-# --- 2. DATA CLEANING (IQR Method) ---
 def clean_fares(df):
     cleaned_frames = []
     for (route, lead_time), group in df.groupby(['route', 'lead_time']):
@@ -56,7 +56,6 @@ def clean_fares(df):
         cleaned_frames.append(cleaned_group)
     return pd.concat(cleaned_frames).reset_index(drop=True)
 
-# --- 3. INDEX CALCULATION ENGINE ---
 def calculate_apix(df_cleaned):
     df_base_period = df_cleaned[df_cleaned['date'].isin(['2024-05-01', '2024-05-02', '2024-05-03'])]
     base_prices_map = df_base_period.groupby('route')['total_fare'].mean().to_dict()
@@ -71,7 +70,7 @@ def calculate_apix(df_cleaned):
     apix_daily['Weekly_APIx'] = apix_daily['APIx'].rolling(window=7, min_periods=1).mean()
     return apix_daily
 
-# --- 4. GRAPHRAG EXPLAINABILITY ---
+# --- 3. GRAPHRAG EXPLAINABILITY ---
 knowledge_graph = {
     '2024-05-13': {'event': 'ATF Fuel Price Hike', 'impact': 'General 5-8% price hike across India.', 'citations': ['MoPNG Circular Ref: 2024-89']},
     'holiday_season': {'start': '2024-05-20', 'end': '2024-05-25', 'event': 'Summer Holiday Demand Peak', 'impact': 'Heavy booking spikes (+25%) on DEL-BOM & DEL-BLR.', 'citations': ['MMT Summer Travel Trends']}
@@ -85,7 +84,7 @@ def query_explainer(date_str):
         reasons.append(f"Fuel Hike: {knowledge_graph['2024-05-13']['impact']}")
         citations.extend(knowledge_graph['2024-05-13']['citations'])
     if datetime.date(2024, 5, 20) <= t_date <= datetime.date(2024, 5, 25):
-        reasons.append(f"Holiday Spike: {knowledge_graph['holiday_season']['impact']}")
+        reasons.append(f"Holiday Demand Surge: {knowledge_graph['holiday_season']['impact']}")
         citations.extend(knowledge_graph['holiday_season']['citations'])
         
     if not reasons:

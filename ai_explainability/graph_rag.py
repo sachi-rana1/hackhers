@@ -11,7 +11,7 @@ KNOWLEDGE_GRAPH = {
         "start": "2024-05-20",
         "end": "2024-05-25",
         "event": "Buddha Purnima & Domestic Summer Holidays Peak",
-        "impact": "Surging holiday travel passenger traffic triggers extreme pricing limits on DEL-BOM & DEL-BLR.",
+        "impact": "Surging holiday passenger traffic triggers extreme pricing limits on DEL-BOM & DEL-BLR.",
         "category": "Seasonal Market Demand"
     }
 }

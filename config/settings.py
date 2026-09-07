@@ -1,19 +1,18 @@
 import os
 
-# --- System Metadata ---
 APP_NAME = "APIx System"
-DEBUG = os.getenv("DEBUG", "True") == "True"
+DEBUG = True
 
-# --- Database Credentials ---
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/apix_db")
+# Database URL (Defaults to local SQLite so it works out-of-the-box!)
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./apix_local.db")
 
-# --- Flight Corridor Constants & Official DGCA Traffic Weights ---
+# Official DGCA Passenger Traffic Distribution Weights (Sum = 1.0)
 ROUTE_WEIGHTS = {
-    'DEL-BOM': 0.35,  # Delhi - Mumbai (35% weight)
-    'DEL-BLR': 0.25,  # Delhi - Bengaluru (25% weight)
-    'BOM-BLR': 0.18,  # Mumbai - Bengaluru (18% weight)
-    'DEL-CCU': 0.12,  # Delhi - Kolkata (12% weight)
-    'BLR-HYD': 0.10   # Bengaluru - Hyderabad (10% weight)
+    'DEL-BOM': 0.35,  # Delhi - Mumbai
+    'DEL-BLR': 0.25,  # Delhi - Bengaluru
+    'BOM-BLR': 0.18,  # Mumbai - Bengaluru
+    'DEL-CCU': 0.12,  # Delhi - Kolkata
+    'BLR-HYD': 0.10   # Bengaluru - Hyderabad
 }
 
 AIRLINES = ['IndiGo', 'Air India', 'SpiceJet', 'Akasa Air', 'Air India Express']

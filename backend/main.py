@@ -1,13 +1,14 @@
-from fastapi import FastAPI, Query, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from ai_explainability.graph_rag import explain_price_movement
+from backend.routes import index, explain
 
 app = FastAPI(
-    title="APIx High-Performance REST Core Gateway",
+    title="APIx High-Performance REST Gateway",
     description="Calculated Indian airfare CPI tracker API feeds.",
     version="1.0.0"
 )
 
+# Enable CORS for frontend or local dashboard connections
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -16,20 +17,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# --- 🔌 ROUTER REGISTRATION ---
+# This links your separate index.py and explain.py route files to the app
+app.include_router(index.router, prefix="/api/v1")
+app.include_router(explain.router, prefix="/api/v1")
+
 @app.get("/")
 def gateway_index():
     return {"status": "Online", "service": "APIx Core Platform Gateway"}
-
-@app.get("/api/v1/explain")
-def query_graph_explain(date: str = Query(..., description="Query target date YYYY-MM-DD")):
-    """
-    Exposes GraphRAG explanation lookups as a REST endpoint.
-    """
-    analysis = explain_price_movement(date)
-    if "error" in analysis:
-        raise HTTPException(status_code=400, detail=analysis["error"])
-    return {
-        "date": date,
-        "explanation": analysis["explanation"],
-        "classifications": analysis["categories"]
-    }

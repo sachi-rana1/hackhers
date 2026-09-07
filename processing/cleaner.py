@@ -7,7 +7,7 @@ def clean_scraped_fares(df_raw: pd.DataFrame) -> pd.DataFrame:
     """
     cleaned_frames = []
     
-    # We must calculate distinct bounds to avoid dropping cheap T+45 flights as outliers
+    # We must calculate distinct bounds to avoid dropping urgent T+1 flights as outliers
     for (route, lead_time), group in df_raw.groupby(['route', 'lead_time']):
         q1 = group['total_fare'].quantile(0.25)
         q3 = group['total_fare'].quantile(0.75)

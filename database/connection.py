@@ -2,13 +2,16 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 from config.settings import DATABASE_URL
 
-engine = create_engine(DATABASE_URL, pool_pre_ping=True)
+# SQLite requires different thread settings than PostgreSQL/TimescaleDB
+connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
+
+engine = create_engine(DATABASE_URL, connect_args=connect_args)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
 def get_db():
     """
-    Dependency to yield an active SQL connection context block.
+    Yields an active database session context block.
     """
     db = SessionLocal()
     try:
